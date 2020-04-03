@@ -9,32 +9,63 @@ const moment = require('moment');
 
 module.exports = function (app) {
 
-  app.get("/instructors", isInstructor, (req, res) => {
+  app.get("/instructors", isInstructor, async (req, res) => {
+    try {
 
-    db.Class.findAll({
-      include: [db.Instructor],
-    }).then(function (dbClass) {
+      const hbsObject = {};
 
-      dbClassValues = dbClass.map(classObj => {
-        return {
-          ...classObj.dataValues,
-          datetime: moment(classObj.dataValues.datetime).format("M/D/YYYY h:mm a"),
-          Instructor: classObj.dataValues.Instructor.dataValues
-        };
-      });
 
-      dbClassValues = dbClassValues.map(classObj => {
-        classObj.Instructor.name = classObj.Instructor.name.replace(",", " ");
-        return classObj;
-      });
+      if (req.query.parameters) {
+        const dbClassValues = await insClassFilter(req.user.id, JSON.parse(req.query.parameters))
 
-      console.log(dbClassValues)
-      let hbsObject = {
-        classes: dbClassValues
-      };
+        hbsObject.classes = dbClassValues.map(classObj => ({
+          ...classObj,
+          datetime: moment(classObj.datetime).format("M/D/YYYY h:mm a"),
+          Instructor: {
+            ...classObj.Instructor,
+            name: classObj.Instructor.name.replace(",", " ")
+          },
+
+        }));
+
+
+      } else {
+        const dbClass = await db.Class.findAll({
+          include: [db.Instructor],
+          order: [
+            ['createdAt', 'DESC']
+          ]
+        })
+
+        hbsObject.classes = dbClass
+          .map(classObj => ({
+            ...classObj.dataValues,
+            datetime: moment(classObj.dataValues.datetime).format("M/D/YYYY h:mm a"),
+            Instructor: classObj.dataValues.Instructor.dataValues
+          }))
+          .map(classObj => ({
+            ...classObj,
+            Instructor: {
+              ...classObj.Instructor,
+              name: classObj.Instructor.name.replace(",", " ")
+            }
+          }))
+      }
+
+      const user = await db.Instructor.findOne({
+        attributes: ['name'],
+        where: {
+          UserId: req.user.id
+        }
+      })
+
+      hbsObject.insName = user.dataValues.name.replace(",", " ")
 
       res.render("instructors", hbsObject);
-    });
+    } catch (error) {
+      console.log(error)
+      res.sendStatus(500)
+    }
   });
 
   app.get("/students", isStudent, (req, res) => {
@@ -75,7 +106,7 @@ module.exports = function (app) {
     insClassFilter(req.user.id, filterSettings).then(dbClassValues => {
       dbClassValues = dbClassValues.map(classObj => {
         classObj.Instructor.name = classObj.Instructor.name.replace(",", " "),
-        classObj.datetime = moment(classObj.datetime).format("M/D/YYYY h:mm a")
+          classObj.datetime = moment(classObj.datetime).format("M/D/YYYY h:mm a")
         return classObj;
       });
       res.render("instructors", {
@@ -113,6 +144,7 @@ module.exports = function (app) {
 
   // homepage
   app.get('/', (req, res) => {
+
     res.render('index');
   });
 };

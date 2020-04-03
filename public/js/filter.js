@@ -10,7 +10,7 @@ const applySettings = () => {
         let queryURL;
 
         if (user.instructor) {
-            queryURL = "/instructors/filtered?parameters=";
+            queryURL = "/instructors?parameters=";
         } else {
             queryURL = "/students/filtered?parameters=";
         }
