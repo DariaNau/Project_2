@@ -1,9 +1,9 @@
 $(document).ready(function () {
   // This file just does a GET request to figure out which user is logged in
   // and updates the HTML on the page
-  $.get("/api/user_data").then(data => {
-    $(".instructor-name").text(data.name);
-  });
+  // $.get("/api/user_data").then(data => {
+  //   $(".instructor-name").text(data.name);
+  // });
 
   // ADD CLASS FORM
   // Getting references to our form and input
