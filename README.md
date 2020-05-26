@@ -1,6 +1,6 @@
-# TutorMe - Full Stack 
+# TutorMe - Full Stack App
 
-## Tutorme
+## What is TutorMe? Great question!
 An online tutoring service that is available to you from anywhere. link with others who have already mastered what you are learning. everyone is good at something in their own way, here at tutorMe if you feel like you have a good grasp on a language or framework simply select from the list provided and let others learn from you.
 
 ## Launch
@@ -26,10 +26,11 @@ The app has a an area with commonly used resourses that can be accessed by a cli
 * Communicate via email through app directly to your instructor and set up payments
 
 ## Technologies
-Bootstrap 4 
-JavaScript
-Jquery
-handlebars.js
-Sequelize 
-MySQL
-Node.js
+- Bootstrap 4 
+- JavaScript
+- Jquery
+- handlebars.js
+- Sequelize 
+- MySQL
+- Node.js
+- MVC structure
